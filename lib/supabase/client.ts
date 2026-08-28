@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import { Database } from './types';
+import { publishableKey, supabaseUrl } from "@craudioviz/platform-sdk";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const SUPABASE_URL = supabaseUrl();
+const supabaseAnonKey = publishableKey();
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient<Database>(SUPABASE_URL, supabaseAnonKey);
