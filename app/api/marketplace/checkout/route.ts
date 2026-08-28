@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/supabase/server';
 import { getErrorMessage, logError, formatApiError } from '@/lib/utils/error-utils';
+import { supabaseUrl } from "@craudioviz/platform-sdk";
 
 export async function POST(req: Request) {
   try {
@@ -22,9 +23,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid provider' }, { status: 400 });
     }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const SUPABASE_URL = supabaseUrl();
     const functionName = provider === 'stripe' ? 'stripe-checkout' : 'paypal-checkout';
-    const functionUrl = `${supabaseUrl}/functions/v1/${functionName}?productId=${productId}&type=${type}`;
+    const functionUrl = `${SUPABASE_URL}/functions/v1/${functionName}?productId=${productId}&type=${type}`;
 
     const response = await fetch(functionUrl, {
       method: 'POST',
