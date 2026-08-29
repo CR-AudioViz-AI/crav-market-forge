@@ -3,6 +3,8 @@
 // Updated: December 22, 2025 - 10:55 PM EST
 // Store ID: 16513682 (Personal orders)
 
+import { urlSegment } from '@craudioviz/platform-sdk/lib/egress-guard';
+
 const PRINTFUL_API_KEY = process.env.PRINTFUL_API_KEY;
 const PRINTFUL_STORE_ID = process.env.PRINTFUL_STORE_ID || '16513682';
 const PRINTFUL_API_URL = 'https://api.printful.com';
@@ -170,7 +172,10 @@ export async function createMockupTask(params: {
   variantIds: number[];
   files: Array<{ placement: string; image_url: string }>;
 }): Promise<{ task_key: string; status: string }> {
-  return printfulRequest(`/mockup-generator/create-task/${params.productId}`, {
+  // Encoded and shape-checked: productId reaches here from a request and is
+  // interpolated into a PATH. A value containing ../ walks out of the
+  // mockup-generator endpoint; one containing ? or # truncates the path.
+  return printfulRequest(`/mockup-generator/create-task/${urlSegment(String(params.productId), /^[0-9]{1,12}$/)}`, {
     method: 'POST',
     body: JSON.stringify({
       variant_ids: params.variantIds,
@@ -187,7 +192,7 @@ export async function getMockupResult(taskKey: string): Promise<{
   mockups?: Array<{ placement: string; variant_ids: number[]; mockup_url: string }>;
   error?: string;
 }> {
-  return printfulRequest(`/mockup-generator/task?task_key=${taskKey}`);
+  return printfulRequest(`/mockup-generator/task?task_key=${urlSegment(taskKey, /^[A-Za-z0-9_-]{1,64}$/)}`);
 }
 
 /**
