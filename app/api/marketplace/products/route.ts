@@ -32,7 +32,7 @@ export async function POST(req: Request) {
       .single()) as any;
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      return NextResponse.json({ error: 'The request could not be completed.', code: 'INTERNAL_ERROR' }, { status: 400 });
     }
 
     if (isSeries) {
